@@ -17,7 +17,7 @@ security = HTTPBasic()
 def verify_basic_auth(credentials: HTTPBasicCredentials = Depends(security)):
     correct_username = os.getenv("BASIC_AUTH_USERNAME")
     correct_password = os.getenv("BASIC_AUTH_PASSWORD")
-    if not (secrets.compare_digest(credentials.username, correct_username) and secrets.compare_digest(credentials.password, correct_password)):
+    if not (secrets.compare_digest(credentials.username, correct_username) and secrets.compare_digest(credentials.password, correct_password)):  # type: ignore
         raise HTTPException(
             status_code=401, detail="Incorrect username or password")
 
@@ -54,7 +54,7 @@ def create_short_url(
     db: Session = Depends(get_db)
 ):
     stored_api_key = get_option(db, "api_key")
-    if not stored_api_key or stored_api_key.options_value != api_key:
+    if not stored_api_key or stored_api_key.options_value != api_key:  # type: ignore
         raise HTTPException(status_code=403, detail="Invalid API key")
 
     shortkey = None

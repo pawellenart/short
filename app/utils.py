@@ -7,7 +7,7 @@ from app.models import URL, Options
 def generate_numeric_key(db: Session):
     last_url = db.query(URL).order_by(URL.shortkey.desc()).first()
     if last_url and last_url.shortkey.isdigit():
-        return str(int(last_url.shortkey) + 1)
+        return str(int(last_url.shortkey) + 1)  # type: ignore
     return "1"
 
 
@@ -22,7 +22,7 @@ def is_custom_keyword_available(db: Session, keyword: str):
 def set_option(db: Session, key: str, value: str):
     option = db.query(Options).filter(Options.options_key == key).first()
     if option:
-        option.options_value = value
+        option.options_value = value  # type: ignore
     else:
         option = Options(options_key=key, options_value=value)
         db.add(option)
