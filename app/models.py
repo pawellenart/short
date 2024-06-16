@@ -1,4 +1,5 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, String, Text, DateTime
+from sqlalchemy.sql import func
 from app.database import Base
 
 
@@ -9,6 +10,7 @@ class URL(Base):
     url = Column(Text, nullable=False)
     title = Column(Text, nullable=True)
     counter = Column(Integer, default=0)
+    date_created = Column(DateTime, server_default=func.now())
 
 
 class Options(Base):

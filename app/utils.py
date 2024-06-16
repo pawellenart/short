@@ -1,7 +1,7 @@
 import random
 import string
 from sqlalchemy.orm import Session
-from app.models import URL
+from app.models import URL, Options
 
 
 def generate_numeric_key(db: Session):
@@ -17,3 +17,19 @@ def generate_random_string(length=7):
 
 def is_custom_keyword_available(db: Session, keyword: str):
     return db.query(URL).filter(URL.shortkey == keyword).first() is None
+
+
+def set_option(db: Session, key: str, value: str):
+    option = db.query(Options).filter(Options.options_key == key).first()
+    if option:
+        option.options_value = value
+    else:
+        option = Options(options_key=key, options_value=value)
+        db.add(option)
+    db.commit()
+    db.refresh(option)
+    return option
+
+
+def get_option(db: Session, key: str):
+    return db.query(Options).filter(Options.options_key == key).first()
