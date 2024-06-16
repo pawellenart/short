@@ -1,13 +1,21 @@
 services:
-  app:
+  backend:
     build:
       context: .
-    container_name: short
+    container_name: short-backend
     ports:
       - '7654:7654'
-    environment:
-      - BASIC_AUTH_USERNAME=admin
-      - BASIC_AUTH_PASSWORD=test123
     volumes:
       - .:/usr/src/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 7654
+
+  frontend:
+    build:
+      context: ./frontend
+    container_name: short-frontend
+    ports:
+      - '8765:8765'
+    stdin_open: true
+    tty: true
+    environment:
+      - REACT_APP_BACKEND_DOMAIN=http://localhost:7654
