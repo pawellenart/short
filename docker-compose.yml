@@ -1,0 +1,16 @@
+services:
+  app:
+    build:
+      context: .
+    container_name: short
+    ports:
+      - '7654:7654'
+    environment:
+      - DB_HOST=10.13.13.4
+      - DB_PORT=3306
+      - DB_NAME=short
+      - DB_USER=short
+      - DB_PASSWORD=kh4sYyF39qEZRf3d
+    volumes:
+      - .:/usr/src/app
+    command: uvicorn app.main:app --host 0.0.0.0 --port 7654
