@@ -175,6 +175,8 @@ def get_all_urls(
 def redirect_short_url(shortkey: str, db: Session = Depends(get_db)):
     db_url = db.query(URL).filter(URL.shortkey == shortkey).first()
     if db_url:
-        return RedirectResponse(url=str(db_url.url))
+        db_url.counter += 1  # Increment the counter
+        db.commit()
+        return RedirectResponse(url=db_url.url)
     else:
         raise HTTPException(status_code=404, detail="Short URL not found")
