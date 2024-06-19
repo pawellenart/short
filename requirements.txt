@@ -1,3 +1,7 @@
 fastapi[all]
 uvicorn[standard]
 sqlalchemy
+pydantic
+psycopg2-binary
+pymysql
+mariadb

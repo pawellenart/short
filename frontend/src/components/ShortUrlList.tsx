@@ -14,22 +14,41 @@ interface Url {
   date_created: string;
 }
 
+interface UrlResponse {
+  total: number;
+  page: number;
+  page_size: number;
+  total_pages: number;
+  urls: Url[];
+}
+
 const ShortUrlList: React.FC = () => {
   const [urls, setUrls] = useState<Url[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [page, setPage] = useState<number>(1);
+  const [pageSize, setPageSize] = useState<number>(10);
+  const [sortBy, setSortBy] = useState<string>("date_created");
+  const [sortOrder, setSortOrder] = useState<string>("desc");
+  const [totalPages, setTotalPages] = useState<number>(1);
 
   useEffect(() => {
     const fetchUrls = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/urls`,
+          `${process.env.REACT_APP_BACKEND_URL}/urls?page=${page}&page_size=${pageSize}&sort_by=${sortBy}&sort_order=${sortOrder}`,
+          {
+            headers: {
+              "X-Secret-Key": process.env.REACT_APP_SECRET_KEY || "",
+            },
+          },
         );
         if (!response.ok) {
           throw new Error("Failed to fetch URLs");
         }
-        const data: Url[] = await response.json();
-        setUrls(data);
+        const data: UrlResponse = await response.json();
+        setUrls(data.urls);
+        setTotalPages(data.total_pages);
       } catch (error) {
         if (error instanceof Error) {
           setError(error.message);
@@ -42,7 +61,25 @@ const ShortUrlList: React.FC = () => {
     };
 
     fetchUrls();
-  }, []);
+  }, [page, pageSize, sortBy, sortOrder]);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage > 0 && newPage <= totalPages) {
+      setPage(newPage);
+    }
+  };
+
+  const handlePageSizeChange = (
+    event: React.ChangeEvent<HTMLSelectElement>,
+  ) => {
+    setPageSize(Number(event.target.value));
+  };
+
+  const handleSortChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const [sort, order] = event.target.value.split(":");
+    setSortBy(sort);
+    setSortOrder(order);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -54,7 +91,7 @@ const ShortUrlList: React.FC = () => {
 
   return (
     <div className="overflow-x-auto p-4">
-      <Table>
+      <Table hoverable>
         <TableHead>
           <TableHeadCell>Short URL</TableHeadCell>
           <TableHeadCell>URL</TableHeadCell>

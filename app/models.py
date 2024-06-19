@@ -19,3 +19,10 @@ class Options(Base):
     id = Column(Integer, primary_key=True, autoincrement=True)
     options_key = Column(String(255), index=True, nullable=False)
     options_value = Column(Text, nullable=False)
+
+
+class ApiKey(Base):
+    __tablename__ = "api_keys"
+    id = Column(Integer, primary_key=True, index=True, autoincrement=True)
+    api_key = Column(String(64), unique=True, index=True, nullable=False)
+    date_created = Column(DateTime(timezone=True), server_default=func.now())

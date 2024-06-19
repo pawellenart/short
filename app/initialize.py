@@ -1,7 +1,11 @@
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy import create_engine
 from app.database import Base, SQLALCHEMY_DATABASE_URL
-from app.models import URL, Options  # Ensure models are imported
+from app.models import URL, Options, ApiKey  # Ensure models are imported
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 
 def initialize():

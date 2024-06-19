@@ -2,9 +2,20 @@ services:
   backend:
     build:
       context: .
+      args:
+        - DB_TYPE=${DB_TYPE}
     container_name: short-backend
     ports:
       - '7654:7654'
+    environment:
+      - BACKEND_USERNAME=admin
+      - BACKEND_PASSWORD=secret
+      - DB_TYPE=sqlite # Change to 'postgres', 'mysql', or 'mariadb' as needed
+      - DB_USER= # Only needed for postgres, mysql, or mariadb
+      - DB_PASSWORD= # Only needed for postgres, mysql, or mariadb
+      - DB_HOST= # Only needed for postgres, mysql, or mariadb
+      - DB_PORT= # Default port for postgres, change as needed for mysql or mariadb
+      - DB_NAME=short
     volumes:
       - .:/usr/src/app
     command: uvicorn app.main:app --host 0.0.0.0 --port 7654
