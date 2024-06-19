@@ -32,16 +32,13 @@ const ShortUrlList: React.FC = () => {
   const [sortOrder, setSortOrder] = useState<string>("desc");
   const [totalPages, setTotalPages] = useState<number>(1);
 
+  const apiKey = process.env.REACT_APP_API_KEY;
+
   useEffect(() => {
     const fetchUrls = async () => {
       try {
         const response = await fetch(
-          `${process.env.REACT_APP_BACKEND_URL}/urls?page=${page}&page_size=${pageSize}&sort_by=${sortBy}&sort_order=${sortOrder}`,
-          {
-            headers: {
-              "X-Secret-Key": process.env.REACT_APP_SECRET_KEY || "",
-            },
-          },
+          `${process.env.REACT_APP_BACKEND_URL}/urls?api_key=${apiKey}&page=${page}&page_size=${pageSize}&sort_by=${sortBy}&sort_order=${sortOrder}`,
         );
         if (!response.ok) {
           throw new Error("Failed to fetch URLs");
