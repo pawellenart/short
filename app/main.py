@@ -1,5 +1,7 @@
 import os
 import secrets
+import bcrypt
+from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Body, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from fastapi.middleware.cors import CORSMiddleware
@@ -39,10 +41,19 @@ def verify_basic_auth(credentials: HTTPBasicCredentials = Depends(security)):
             status_code=401, detail="Incorrect username or password")
 
 
+def hash_api_key(api_key: str) -> str:
+    salt = bcrypt.gensalt()
+    hashed = bcrypt.hashpw(api_key.encode('utf-8'), salt)
+    return hashed.decode('utf-8')
+
+
 def verify_api_key(api_key: str, db: Session):
-    api_key_entry = db.query(ApiKey).filter(ApiKey.api_key == api_key).first()
-    if not api_key_entry:
-        raise HTTPException(status_code=403, detail="Invalid API key")
+    api_key_entry = db.query(ApiKey).filter(
+        ApiKey.api_key != None).all()  # Retrieve all non-null keys
+    for entry in api_key_entry:
+        if bcrypt.checkpw(api_key.encode('utf-8'), entry.api_key.encode('utf-8')):
+            return True
+    raise HTTPException(status_code=403, detail="Invalid API key")
 
 
 @app.get("/")
@@ -56,7 +67,8 @@ def generate_api_key(
     credentials: HTTPBasicCredentials = Depends(verify_basic_auth)
 ):
     new_api_key = secrets.token_hex(32)
-    api_key_entry = ApiKey(api_key=new_api_key)
+    hashed_api_key = hash_api_key(new_api_key)
+    api_key_entry = ApiKey(api_key=hashed_api_key)
     db.add(api_key_entry)
     db.commit()
     db.refresh(api_key_entry)

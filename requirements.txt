@@ -5,3 +5,4 @@ pydantic
 psycopg2-binary
 pymysql
 mariadb
+bcrypt

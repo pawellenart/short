@@ -24,5 +24,5 @@ class Options(Base):
 class ApiKey(Base):
     __tablename__ = "api_keys"
     id = Column(Integer, primary_key=True, index=True, autoincrement=True)
-    api_key = Column(String(64), unique=True, index=True, nullable=False)
+    api_key = Column(String(128), unique=True, index=True, nullable=False)
     date_created = Column(DateTime(timezone=True), server_default=func.now())
