@@ -2,6 +2,7 @@ import os
 import secrets
 import bcrypt
 import requests
+import chardet
 from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Body, Query
@@ -62,7 +63,14 @@ def fetch_title(url: str) -> str:
     try:
         response = requests.get(url)
         response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
+
+        # Detect encoding
+        result = chardet.detect(response.content)
+        encoding = result['encoding']
+
+        # Decode content using detected encoding
+        decoded_content = response.content.decode(encoding)
+        soup = BeautifulSoup(decoded_content, 'html.parser')
         return soup.title.string if soup.title else url
     except Exception as e:
         return url
