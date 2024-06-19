@@ -11,6 +11,7 @@ import React, { useEffect, useState } from "react";
 interface Url {
   shortkey: string;
   url: string;
+  title: string;
   date_created: string;
 }
 
@@ -92,6 +93,7 @@ const ShortUrlList: React.FC = () => {
         <TableHead>
           <TableHeadCell>Short URL</TableHeadCell>
           <TableHeadCell>URL</TableHeadCell>
+          <TableHeadCell>Title</TableHeadCell>
           <TableHeadCell>Date Created</TableHeadCell>
         </TableHead>
         <TableBody className="divide-y">
@@ -110,6 +112,7 @@ const ShortUrlList: React.FC = () => {
                 </a>
               </TableCell>
               <TableCell>{url.url}</TableCell>
+              <TableCell>{url.title}</TableCell>
               <TableCell>
                 {new Date(url.date_created).toLocaleString()}
               </TableCell>

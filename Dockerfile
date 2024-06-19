@@ -14,7 +14,8 @@ RUN mkdir -p /usr/src/app/db && chmod -R 777 /usr/src/app/db
 RUN apt-get update && apt-get install -y gcc python3-dev musl-dev
 
 # Install base dependencies
-RUN pip install --no-cache-dir fastapi[all] uvicorn sqlalchemy pydantic bcrypt
+RUN pip install --no-cache-dir fastapi[all] uvicorn sqlalchemy pydantic bcrypt requests beautifulsoup4
+
 
 # Install database-specific dependencies
 ARG DB_TYPE=sqlite

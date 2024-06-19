@@ -1,6 +1,8 @@
 import os
 import secrets
 import bcrypt
+import requests
+from bs4 import BeautifulSoup
 from dotenv import load_dotenv
 from fastapi import FastAPI, Depends, HTTPException, Body, Query
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
@@ -56,6 +58,16 @@ def verify_api_key(api_key: str, db: Session):
     raise HTTPException(status_code=403, detail="Invalid API key")
 
 
+def fetch_title(url: str) -> str:
+    try:
+        response = requests.get(url)
+        response.raise_for_status()
+        soup = BeautifulSoup(response.text, 'html.parser')
+        return soup.title.string if soup.title else url
+    except Exception as e:
+        return url
+
+
 @app.get("/")
 def read_root():
     return {"detail": "ok"}
@@ -101,14 +113,17 @@ def create_short_url(
     else:
         raise HTTPException(status_code=400, detail="Invalid key type")
 
-    new_url = URL(shortkey=shortkey, url=url)
+    title = fetch_title(url)
+
+    new_url = URL(shortkey=shortkey, url=url, title=title)
     db.add(new_url)
     db.commit()
     db.refresh(new_url)
     return {
         "shortkey": new_url.shortkey,
         "url": new_url.url,
-        "date_created": new_url.date_created  # Include date_created in the response
+        "title": new_url.title,
+        "date_created": new_url.date_created
     }
 
 

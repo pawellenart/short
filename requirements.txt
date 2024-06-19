@@ -6,3 +6,5 @@ psycopg2-binary
 pymysql
 mariadb
 bcrypt
+requests
+beautifulsoup4
